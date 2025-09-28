@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Power Scale Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .calculator-section, .rankings-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .character-input {
+            margin-bottom: 25px;
+        }
+
+        .character-input input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .character-input input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .factor {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .factor-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .factor-description {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 10px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4ecdc4;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .score-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .total-score {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .total-score h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .total-points {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .tier-sub10 { background: #6c757d; }
+        .tier-bronze { background: #cd7f32; }
+        .tier-silver { background: #c0c0c0; color: #333; }
+        .tier-gold { background: #ffd700; color: #333; }
+
+        .rankings-list {
+            list-style: none;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .ranking-item:nth-child(1) { border-left-color: #ffd700; }
+        .ranking-item:nth-child(2) { border-left-color: #c0c0c0; }
+        .ranking-item:nth-child(3) { border-left-color: #cd7f32; }
+        .ranking-item:nth-child(n+4) { border-left-color: #4ecdc4; }
+
+        .hero-name {
+            font-weight: bold;
+        }
+
+        .hero-points {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .comparison-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 20px;
+        }
+
+        .closest-matches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .match-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .match-exact { border-color: #4ecdc4; }
+        .match-close { border-color: #ffd700; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .closest-matches {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ MARVEL POWER SCALE CALCULATOR ⚡</h1>
+            <div class="subtitle">4-Factor Baseline Analysis System</div>
+            <div style="color: rgba(255,255,255,0.8); font-size: 1em;">Calculate any Marvel hero's true power level scientifically</div>
+        </div>
+
+        <div class="main-content">
+            <div class="calculator-section">
+                <h2 class="section-title">🧮 Power Calculator</h2>
+                
+                <div class="character-input">
+                    <input type="text" id="characterName" placeholder="Enter Marvel character name..." />
+                </div>
+
+                <div class="factor">
+                    <div class="factor-label">Factor 1: Official Strength Class (0-8 points)</div>
+                    <div class="factor-description">Marvel Handbook weight lifting capacity with arms fully extended</div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="8" value="0" class="slider" id="strengthClass" />
+                        <div class="score-display" id="strengthScore">0</div>
+                    </div>
+                </div>
+
+                <div class="factor">
+                    <div class="factor-label">Factor 2: Consistent Comic Feats (0-6 points)</div>
+                    <div class="factor-description">Repeatable abilities across multiple storylines (not outliers)</div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="6" value="0" class="slider" id="comicFeats" />
+                        <div class="score-display" id="featsScore">0</div>
+                    </div>
+                </div>
+
+                <div class="factor">
+                    <div class="factor-label">Factor 3: Baseline Durability (0-5 points)</div>
+                    <div class="factor-description">Standard damage resistance without amps or rage modes</div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="5" value="0" class="slider" id="durability" />
+                        <div class="score-display" id="durabilityScore">0</div>
+                    </div>
+                </div>
+
+                <div class="factor">
+                    <div class="factor-label">Factor 4: Power Reliability (0-4 points)</div>
+                    <div class="factor-description">Consistency of accessing full strength (no mental triggers)</div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="4" value="0" class="slider" id="reliability" />
+                        <div class="score-display" id="reliabilityScore">0</div>
+                    </div>
+                </div>
+
+                <div class="total-score">
+                    <h3>Total Power Level</h3>
+                    <div class="total-points" id="totalPoints">0</div>
+                    <div class="tier-badge" id="tierBadge">Sub-10 Tier</div>
+                </div>
+            </div>
+
+            <div class="rankings-section">
+                <h2 class="section-title">🏆 Official Top 10 Rankings</h2>
+                <ul class="rankings-list">
+                    <li class="ranking-item">
+                        <span class="hero-name">#1 Thor</span>
+                        <span class="hero-points">19 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#2 Blue Marvel</span>
+                        <span class="hero-points">18 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#3 Hulk (Baseline)</span>
+                        <span class="hero-points">17 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#4 Silver Surfer</span>
+                        <span class="hero-points">16 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#5 Sentry</span>
+                        <span class="hero-points">16 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#6 Beta Ray Bill</span>
+                        <span class="hero-points">14 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#7 Hercules</span>
+                        <span class="hero-points">13 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#8 Wonder Man</span>
+                        <span class="hero-points">12 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#9 She-Hulk</span>
+                        <span class="hero-points">11 pts</span>
+                    </li>
+                    <li class="ranking-item">
+                        <span class="hero-name">#10 The Thing</span>
+                        <span class="hero-points">10 pts</span>
+                    </li>
+                </ul>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">Tier System:</h4>
+                    <div style="font-size: 0.9em; line-height: 1.6;">
+                        <div>🥇 <strong>Gold Tier (17-19 pts):</strong> Cosmic-level powerhouses</div>
+                        <div>🥈 <strong>Silver Tier (14-16 pts):</strong> Elite heavy hitters</div>
+                        <div>🥉 <strong>Bronze Tier (10-13 pts):</strong> Top-tier heroes</div>
+                        <div>⚪ <strong>Sub-10 Tier (0-9 pts):</strong> Street/mid-level heroes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2 class="section-title">📊 Your Character Comparison</h2>
+            <div id="comparisonResult">
+                <p style="text-align: center; color: rgba(255,255,255,0.7);">
+                    Adjust the sliders above to see how your character compares to the official rankings!
+                </p>
+            </div>
+            <div class="closest-matches" id="closestMatches"></div>
+        </div>
+    </div>
+
+    <script>
+        const heroDatabase = {
+            19: ['Thor'],
+            18: ['Blue Marvel'],
+            17: ['Hulk (Baseline)'],
+            16: ['Silver Surfer', 'Sentry'],
+            14: ['Beta Ray Bill'],
+            13: ['Hercules', 'Spider-Man (example)', 'Iron Man (example)', 'Wolverine (example)'],
+            12: ['Wonder Man', 'Captain America (example)'],
+            11: ['She-Hulk'],
+            10: ['The Thing'],
+            9: ['Colossus', 'Ms. Marvel', 'Doctor Strange (example)']
+        };
+
+        function updateScores() {
+            const strengthClass = document.getElementById('strengthClass').value;
+            const comicFeats = document.getElementById('comicFeats').value;
+            const durability = document.getElementById('durability').value;
+            const reliability = document.getElementById('reliability').value;
+
+            document.getElementById('strengthScore').textContent = strengthClass;
+            document.getElementById('featsScore').textContent = comicFeats;
+            document.getElementById('durabilityScore').textContent = durability;
+            document.getElementById('reliabilityScore').textContent = reliability;
+
+            const total = parseInt(strengthClass) + parseInt(comicFeats) + parseInt(durability) + parseInt(reliability);
+            document.getElementById('totalPoints').textContent = total;
+
+            updateTier(total);
+            updateComparison(total);
+        }
+
+        function updateTier(total) {
+            const tierBadge = document.getElementById('tierBadge');
+            
+            if (total >= 17) {
+                tierBadge.textContent = 'Gold Tier (Cosmic-Level)';
+                tierBadge.className = 'tier-badge tier-gold';
+            } else if (total >= 14) {
+                tierBadge.textContent = 'Silver Tier (Elite Heavy Hitter)';
+                tierBadge.className = 'tier-badge tier-silver';
+            } else if (total >= 10) {
+                tierBadge.textContent = 'Bronze Tier (Top-Tier Hero)';
+                tierBadge.className = 'tier-badge tier-bronze';
+            } else {
+                tierBadge.textContent = 'Sub-10 Tier (Street/Mid-Level)';
+                tierBadge.className = 'tier-badge tier-sub10';
+            }
+        }
+
+        function updateComparison(total) {
+            const characterName = document.getElementById('characterName').value || 'Your Character';
+            const comparisonResult = document.getElementById('comparisonResult');
+            const closestMatches = document.getElementById('closestMatches');
+
+            if (total === 0) {
+                comparisonResult.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">Adjust the sliders above to see how your character compares!</p>';
+                closestMatches.innerHTML = '';
+                return;
+            }
+
+            let ranking = 11;
+            const officialScores = [19, 18, 17, 16, 16, 14, 13, 12, 11, 10];
+            
+            for (let i = 0; i < officialScores.length; i++) {
+                if (total >= officialScores[i]) {
+                    ranking = i + 1;
+                    break;
+                }
+            }
+
+            let comparisonText = '';
+            if (ranking <= 10) {
+                comparisonText = `<strong>${characterName}</strong> would rank <strong>#${ranking}</strong> in the official top 10! This puts them in the same league as Marvel's most powerful heroes.`;
+            } else {
+                comparisonText = `<strong>${characterName}</strong> scores <strong>${total} points</strong>, placing them just outside the top 10. They're still incredibly powerful, competing with heroes like Colossus and Ms. Marvel.`;
+            }
+
+            comparisonResult.innerHTML = `<p style="text-align: center; font-size: 1.1em;">${comparisonText}</p>`;
+
+            // Show closest matches
+            let matches = '';
+            const exactMatches = heroDatabase[total] || [];
+            const closerScores = [];
+            
+            // Find close scores
+            for (let score = total - 2; score <= total + 2; score++) {
+                if (score !== total && heroDatabase[score]) {
+                    closerScores.push({score, heroes: heroDatabase[score]});
+                }
+            }
+
+            if (exactMatches.length > 0) {
+                matches += `<div class="match-card match-exact">
+                    <h4 style="color: #4ecdc4;">Exact Matches (${total} pts)</h4>
+                    ${exactMatches.map(hero => `<div>${hero}</div>`).join('')}
+                </div>`;
+            }
+
+            closerScores.forEach(({score, heroes}) => {
+                matches += `<div class="match-card match-close">
+                    <h4 style="color: #ffd700;">Similar Power (${score} pts)</h4>
+                    ${heroes.slice(0, 3).map(hero => `<div>${hero}</div>`).join('')}
+                </div>`;
+            });
+
+            closestMatches.innerHTML = matches;
+        }
+
+        // Add event listeners
+        document.getElementById('strengthClass').addEventListener('input', updateScores);
+        document.getElementById('comicFeats').addEventListener('input', updateScores);
+        document.getElementById('durability').addEventListener('input', updateScores);
+        document.getElementById('reliability').addEventListener('input', updateScores);
+        document.getElementById('characterName').addEventListener('input', updateComparison);
+
+        // Initialize
+        updateScores();
+    </script>
+</body>
+</html>
